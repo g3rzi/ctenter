@@ -17,6 +17,20 @@ This means you can get a shell in any container regardless of whether it has `/b
 - Root privileges (`sudo`)
 - Go 1.21+ (to build)
 
+## Clone
+
+This repo uses a Git submodule for the `ctenterd` agent. Clone with:
+
+```bash
+git clone --recurse-submodules https://github.com/g3rzi/ctenter.git
+```
+
+If you already cloned without the flag and `agent/ctenterd` is empty:
+
+```bash
+git submodule update --init --recursive
+```
+
 ## Build
 
 ```bash
