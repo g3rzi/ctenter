@@ -1,0 +1,3 @@
+[submodule "agent/ctenterd"]
+	path = agent/ctenterd
+	url = https://github.com/g3rzi/ctenterd.git
