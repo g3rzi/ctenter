@@ -34,6 +34,21 @@ make ctenterd
 make clean
 ```
 
+## Update submodule
+### Pull latest ctenterd
+```
+cd agent\ctenterd
+git pull origin main
+```
+
+### Go back to ctenter root and commit the updated pointer
+```
+cd ..\..
+git add agent\ctenterd
+git commit -m "update ctenterd submodule to latest"
+git push -u origin main
+```
+
 ## Usage
 
 ### List containers
