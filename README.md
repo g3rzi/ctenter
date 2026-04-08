@@ -20,6 +20,47 @@ This creates a frustrating situation:
 
 `ctenter` was built to solve this problem by allowing interactive access to *any* container — even those without a shell — by injecting a lightweight agent directly into the container’s namespaces.  
 
+## Demo  
+
+
+https://github.com/user-attachments/assets/82af3db4-a2fb-41ec-b634-a1673f28b00f
+
+## How to do it manually (without ctenter) - limited
+
+It is possible to access a container’s filesystem and namespaces manually using standard Linux tools but it’s tedious and error-prone.
+
+### 1. Find the container PID
+
+For Docker:  
+```bash
+docker inspect -f '{{.State.Pid}}' <container>
+```
+
+For containerd / CRI-based runtimes, you can use:  
+```
+crictl inspect <container-id> | grep pid
+```
+### 2. Explore the container filesystem  
+
+Once you have the PID, you can access the container’s root filesystem via `/proc`:  
+```
+ls /proc/<PID>/root
+```
+This gives you direct visibility into the container’s filesystem from the host.  
+
+### 3. Enter the container namespaces  
+You can use `nsenter` to enter the container’s namespaces:  
+```
+sudo nsenter -t <PID> -m -u -i -n -p
+```
+
+However, you’ll still hit the same limitation:  
+```
+nsenter: failed to execute /bin/bash: No such file or directory
+```
+If the container doesn’t include a shell, you won’t be able to get interactive access.  
+
+
 ## How it works
 
 `ctenter` works in two steps:
