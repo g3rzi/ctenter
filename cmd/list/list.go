@@ -13,6 +13,7 @@ var (
 	verboseFlag bool
 	wideFlag    bool
 	noTrunc     bool
+	runtimeFlag string
 )
 
 func NewListCmd() *cobra.Command {
@@ -26,6 +27,7 @@ func NewListCmd() *cobra.Command {
 	listCmd.Flags().BoolVarP(&verboseFlag, "verbose", "v", false, "verbose output")
 	listCmd.Flags().BoolVarP(&wideFlag, "wide", "w", false, "show additional columns (pod id, container id, image id)")
 	listCmd.Flags().BoolVar(&noTrunc, "no-trunc", false, "do not truncate long fields")
+	listCmd.Flags().StringVarP(&runtimeFlag, "runtime", "r", "auto", "container runtime to query: auto, docker, cri")
 
 	return listCmd
 }
@@ -35,7 +37,12 @@ func runList(cmd *cobra.Command, args []string) {
 		log.Fatalf("ctenter requires root privileges")
 	}
 
-	discoverer := discover.New(verboseFlag)
+	rt, err := discover.ParseRuntime(runtimeFlag)
+	if err != nil {
+		log.Fatalf("Invalid --runtime flag: %v", err)
+	}
+
+	discoverer := discover.NewWithRuntime(verboseFlag, rt)
 	containers, err := discoverer.ListContainers()
 	if err != nil {
 		log.Fatalf("Failed to list containers: %v", err)

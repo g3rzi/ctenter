@@ -1,9 +1,29 @@
 package discover
 
 import (
+	"fmt"
 	"log"
 	"sort"
 )
+
+// Runtime selects which container runtime provider to use.
+type Runtime string
+
+const (
+	RuntimeAuto   Runtime = "auto"   // try all available providers
+	RuntimeDocker Runtime = "docker" // force Docker only
+	RuntimeCRI    Runtime = "cri"    // force CRI (crictl) only
+)
+
+// ParseRuntime validates and returns a Runtime value.
+func ParseRuntime(s string) (Runtime, error) {
+	switch Runtime(s) {
+	case RuntimeAuto, RuntimeDocker, RuntimeCRI:
+		return Runtime(s), nil
+	default:
+		return "", fmt.Errorf("unknown runtime %q: must be one of auto, docker, cri", s)
+	}
+}
 
 type Discoverer struct {
 	verbose   bool
@@ -11,16 +31,25 @@ type Discoverer struct {
 }
 
 func New(verbose bool) *Discoverer {
-	d := &Discoverer{
-		verbose: verbose,
+	return NewWithRuntime(verbose, RuntimeAuto)
+}
+
+func NewWithRuntime(verbose bool, runtime Runtime) *Discoverer {
+	d := &Discoverer{verbose: verbose}
+
+	switch runtime {
+	case RuntimeDocker:
+		d.providers = []Provider{NewDockerProvider(verbose)}
+	case RuntimeCRI:
+		d.providers = []Provider{NewCRIProvider(verbose)}
+	default:
+		// auto: try CRI first, then Docker
+		d.providers = []Provider{
+			NewCRIProvider(verbose),
+			NewDockerProvider(verbose),
+		}
 	}
-	
-	// Register providers in order of preference
-	d.providers = []Provider{
-		NewCRIProvider(verbose),
-		NewDockerProvider(verbose),
-	}
-	
+
 	return d
 }
 
