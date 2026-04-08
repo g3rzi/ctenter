@@ -1,6 +1,6 @@
 # ctenter
 
-A host-side tool that lists containers across different runtimes (Docker, containerd, CRI-O) and injects a shell agent to get interactive access — even in distroless or shell-less containers.  
+A host-side tool that lists containers across different runtimes (Docker, containerd, CRI-O) and injects a shell agent to get interactive access — even in distroless or shell-less containers.   
  <img align="right" width="250" height="250" alt="ctenter_logo" src="https://github.com/user-attachments/assets/75b8cbe9-c1a8-4781-bad0-d037134e0127" />   
 
 
