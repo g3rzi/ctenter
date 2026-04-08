@@ -48,6 +48,17 @@ make ctenterd
 make clean
 ```
 
+## Test no-shell containers
+
+Use the example image in `examples/` to validate `ctenter` against a container that has no `/bin/sh`:
+
+```bash
+docker build -f examples/Dockerfile.noshell -t ctenter-noshell-test .
+docker run -d --name ctenter-noshell-test ctenter-noshell-test
+```
+
+Full test instructions are in `examples/README.md`.
+
 ## Update submodule
 ### Pull latest ctenterd
 ```

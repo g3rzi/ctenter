@@ -1,0 +1,13 @@
+# Stage 1: build a minimal Go app to keep the container alive
+FROM golang:1.21-alpine AS builder
+
+WORKDIR /app
+RUN printf 'package main\nimport "time"\nfunc main() { for { time.Sleep(time.Hour) } }' > main.go
+RUN CGO_ENABLED=0 go build -o sleeper .
+
+# Stage 2: scratch image — no shell, no libc, no OS utilities
+FROM scratch
+
+COPY --from=builder /app/sleeper /sleeper
+
+ENTRYPOINT ["/sleeper"]
