@@ -17,11 +17,8 @@ func New(verbose bool) *Discoverer {
 	
 	// Register providers in order of preference
 	d.providers = []Provider{
-		//NewProcScanProvider(verbose),
-		// NewDockerProvider(verbose),
-		//NewContainerdProvider(verbose),
 		NewCRIProvider(verbose),
-		//NewProcScanProvider(verbose),
+		NewDockerProvider(verbose),
 	}
 	
 	return d
