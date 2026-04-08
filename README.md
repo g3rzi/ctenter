@@ -2,6 +2,24 @@
 
 A host-side tool that lists containers across different runtimes (Docker, containerd, CRI-O) and injects a shell agent to get interactive access — even in distroless or shell-less containers.
 
+## Why I built this
+
+Modern containers are often built to be minimal (e.g. distroless images) and intentionally exclude shells like `/bin/sh` or `/bin/bash`.
+
+While this improves security and reduces image size, it makes debugging and inspection much harder.
+
+Trying to exec into such containers usually fails with errors like:
+```
+OCI runtime exec failed: exec failed: unable to start container process: exec: "sh": executable file not found in $PATH
+```
+
+This creates a frustrating situation:
+- You can’t `docker exec -it <container> sh`
+- You can’t easily inspect the filesystem or running processes
+- Debugging production issues becomes significantly harder
+
+`ctenter` was built to solve this problem by allowing interactive access to *any* container — even those without a shell — by injecting a lightweight agent directly into the container’s namespaces.  
+
 ## How it works
 
 `ctenter` works in two steps:
