@@ -9,7 +9,7 @@ A host-side tool that lists containers across different runtimes (Docker, contai
 </td>
 <td>
 
-<img src="https://github.com/user-attachments/assets/75b8cbe9-c1a8-4781-bad0-d037134e0127" width="200"/>
+<img src="https://github.com/user-attachments/assets/75b8cbe9-c1a8-4781-bad0-d037134e0127" width="300"/>
 
 </td>
 </tr>
