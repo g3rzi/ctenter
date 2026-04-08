@@ -38,7 +38,7 @@ This creates a frustrating situation:
 
 https://github.com/user-attachments/assets/82af3db4-a2fb-41ec-b634-a1673f28b00f
 
-## How to do it manually (without ctenter) - limited
+## How to do it manually (without ctenter)
 
 It is possible to access a container’s filesystem and namespaces manually using standard Linux tools but it’s tedious and error-prone.
 
@@ -73,6 +73,25 @@ nsenter: failed to execute /bin/bash: No such file or directory
 ```
 If the container doesn’t include a shell, you won’t be able to get interactive access.  
 
+### 4. Workaround: inject your own binary   
+A manual workaround is to copy a statically linked binary (e.g. `busybox`) into the container filesystem via `/proc/<PID>/root`, and then execute it inside the container namespaces.
+
+Install a static busybox on the host:
+```
+sudo apt install busybox-static 
+```
+
+Copy it into the container:  
+```
+sudo cp /bin/busybox /proc/<PID>/root/tmp/busybox
+sudo chmod +x /proc/<PID>/root/tmp/busybox
+```
+
+Then execute it inside the container namespaces:  
+```
+sudo nsenter -t <PID> -m -u -i -n -p --root=/proc/<PID>/root /tmp/busybox sh
+```
+This can give you a shell even if the container doesn’t include one.   
 
 ## How it works
 
