@@ -38,6 +38,17 @@ This creates a frustrating situation:
 
 https://github.com/user-attachments/assets/82af3db4-a2fb-41ec-b634-a1673f28b00f
 
+
+## How it works
+
+`ctenter` works in two steps:
+
+1. Injects a small static agent binary (`ctenterd`) into the container's filesystem via `/proc/<pid>/root`
+2. Uses `nsenter` to enter the container's namespaces and execute the agent
+
+This means you can get a shell in any container regardless of whether it has `/bin/sh`, `/bin/bash`, or any other shell installed.
+
+
 ## How to do it manually (without ctenter)
 
 It is possible to access a container’s filesystem and namespaces manually using standard Linux tools but it’s tedious and error-prone.
@@ -92,15 +103,6 @@ Then execute it inside the container namespaces:
 sudo nsenter -t <PID> -m -u -i -n -p --root=/proc/<PID>/root /tmp/busybox sh
 ```
 This can give you a shell even if the container doesn’t include one.   
-
-## How it works
-
-`ctenter` works in two steps:
-
-1. Injects a small static agent binary (`ctenterd`) into the container's filesystem via `/proc/<pid>/root`
-2. Uses `nsenter` to enter the container's namespaces and execute the agent
-
-This means you can get a shell in any container regardless of whether it has `/bin/sh`, `/bin/bash`, or any other shell installed.
 
 ## Requirements
 
