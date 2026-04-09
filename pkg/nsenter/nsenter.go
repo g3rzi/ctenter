@@ -78,21 +78,32 @@ func (n *NSEnter) execWithNSEnter(pid int, agentPath string, args []string) (str
 }
 
 func (n *NSEnter) interactiveWithNSEnter(pid int, agentPath string) error {
-	// Build nsenter command for interactive shell
+	return n.interactiveWithArgs(pid, agentPath, nil)
+}
+
+// InteractiveExec runs agentPath with args inside the container namespaces,
+// with stdin/stdout/stderr attached — used for custom agents like busybox sh.
+func (n *NSEnter) InteractiveExec(pid int, agentPath string, args []string) error {
+	if n.verbose {
+		log.Printf("Starting interactive exec in container PID %d: %s %v", pid, agentPath, args)
+	}
+	return n.interactiveWithArgs(pid, agentPath, args)
+}
+
+func (n *NSEnter) interactiveWithArgs(pid int, agentPath string, args []string) error {
 	cmdArgs := []string{
 		"-t", fmt.Sprintf("%d", pid),
-		"-a", // Enter all namespaces
-		agentPath, // Run agent in interactive mode (no args)
+		"-a",
+		agentPath,
 	}
-	
+	cmdArgs = append(cmdArgs, args...)
+
 	cmd := exec.Command("nsenter", cmdArgs...)
-	
-	// Connect stdin/stdout/stderr for interactive experience
+
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	
-	// Handle signals properly
+
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	go func() {
@@ -101,11 +112,11 @@ func (n *NSEnter) interactiveWithNSEnter(pid int, agentPath string) error {
 			cmd.Process.Kill()
 		}
 	}()
-	
+
 	if n.verbose {
 		log.Printf("Starting nsenter: %v", cmdArgs)
 	}
-	
+
 	return cmd.Run()
 }
 

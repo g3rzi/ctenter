@@ -19,10 +19,11 @@ var (
 )
 
 var (
-	pidFlag       int
-	execFlag      string
-	agentPathFlag string
-	verboseFlag   bool
+	pidFlag         int
+	execFlag        string
+	agentPathFlag   string
+	verboseFlag     bool
+	interactiveFlag bool
 )
 
 var rootCmd = &cobra.Command{
@@ -39,8 +40,9 @@ func init() {
 
 	// Add shell command flags to root for backward compatibility
 	rootCmd.Flags().IntVarP(&pidFlag, "pid", "p", 0, "target container PID")
-	rootCmd.Flags().StringVarP(&execFlag, "exec", "e", "", "execute command instead of interactive shell")
+	rootCmd.Flags().StringVarP(&execFlag, "exec", "e", "", "execute command in the container (use with --interactive for a shell)")
 	rootCmd.Flags().StringVar(&agentPathFlag, "agent-path", "", "path to custom agent binary (defaults to embedded ctenterd)")
+	rootCmd.Flags().BoolVarP(&interactiveFlag, "interactive", "i", false, "run --exec interactively (attach stdin/stdout/stderr)")
 
 	// Add subcommands
 	rootCmd.AddCommand(list.NewListCmd())
@@ -68,8 +70,9 @@ func newShellCmd() *cobra.Command {
 		Run:   runShell,
 	}
 	shellCmd.Flags().IntVarP(&pidFlag, "pid", "p", 0, "target container PID (required)")
-	shellCmd.Flags().StringVarP(&execFlag, "exec", "e", "", "execute command instead of interactive shell")
+	shellCmd.Flags().StringVarP(&execFlag, "exec", "e", "", "execute command in the container (use with --interactive for a shell)")
 	shellCmd.Flags().StringVar(&agentPathFlag, "agent-path", "", "path to custom agent binary (defaults to embedded ctenterd)")
+	shellCmd.Flags().BoolVarP(&interactiveFlag, "interactive", "i", false, "run --exec interactively (attach stdin/stdout/stderr)")
 	shellCmd.MarkFlagRequired("pid")
 
 	return shellCmd
@@ -125,16 +128,22 @@ func runShell(cmd *cobra.Command, args []string) {
 
 	// Enter container namespaces and execute
 	nsEnter := nsenter.New(verboseFlag)
-	
-	if execFlag != "" {
-		// One-shot execution
+
+	switch {
+	case execFlag != "" && interactiveFlag:
+		// Interactive exec: attach stdin/stdout/stderr and run agent with args
+		if err := nsEnter.InteractiveExec(pidFlag, agentPath, []string{execFlag}); err != nil {
+			log.Fatalf("Failed to start interactive exec: %v", err)
+		}
+	case execFlag != "":
+		// One-shot execution: capture and print output
 		result, err := nsEnter.ExecCommand(pidFlag, agentPath, []string{execFlag})
 		if err != nil {
 			log.Fatalf("Failed to execute command: %v", err)
 		}
 		fmt.Print(result)
-	} else {
-		// Interactive shell
+	default:
+		// Interactive shell via ctenterd (no args)
 		if err := nsEnter.InteractiveShell(pidFlag, agentPath); err != nil {
 			log.Fatalf("Failed to start interactive shell: %v", err)
 		}

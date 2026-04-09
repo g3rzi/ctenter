@@ -234,7 +234,9 @@ sudo ctenter list --runtime docker
 sudo ctenter list --runtime cri
 ```
 
-### Get an interactive shell
+### Get an interactive shell (ctenterd)
+
+The default mode injects `ctenterd` and starts an interactive REPL:
 
 ```bash
 # Get the container PID from `ctenter list`, then:
@@ -244,17 +246,58 @@ sudo ctenter shell --pid <PID>
 sudo ctenter --pid <PID>
 ```
 
-### Run a one-shot command
+Inside the shell:
+```
+ctenterd> ls
+ctenterd> ps
+ctenterd> cat /etc/hostname
+ctenterd> exit
+```
+
+### Run a one-shot command (non-interactive)
+
+Runs a single command and prints output, then exits:
 
 ```bash
 sudo ctenter shell --pid <PID> --exec "ls -la /etc"
+sudo ctenter shell --pid <PID> --exec "cat /proc/1/cmdline"
+sudo ctenter shell --pid <PID> --exec "ps"
 ```
 
 ### Use a custom agent binary
 
+Inject any static binary instead of the default `ctenterd`:
+
 ```bash
 sudo ctenter shell --pid <PID> --agent-path /path/to/custom-agent
 ```
+
+#### One-shot with custom agent
+
+```bash
+# Run a single command using busybox
+sudo ctenter shell --pid <PID> --agent-path /bin/busybox --exec ls
+sudo ctenter shell --pid <PID> --agent-path /bin/busybox --exec "cat /etc/hostname"
+```
+
+#### Interactive shell with custom agent (`--interactive`)
+
+Use `--interactive` (`-i`) together with `--exec` to attach stdin/stdout/stderr
+for interactive binaries like `busybox sh`:
+
+```bash
+# Interactive busybox shell
+sudo ctenter shell --pid <PID> --agent-path /bin/busybox --exec sh --interactive
+
+# Short form
+sudo ctenter shell --pid <PID> --agent-path /bin/busybox --exec sh -i
+```
+
+| Mode | Flags | Behavior |
+|------|-------|----------|
+| Interactive ctenterd shell | _(no flags)_ | injects ctenterd, starts REPL |
+| One-shot command | `--exec <cmd>` | captures output, exits |
+| Interactive custom agent | `--exec <cmd> --interactive` | attaches TTY, runs interactively |
 
 ### Version
 
