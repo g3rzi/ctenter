@@ -1,5 +1,3 @@
-# ctenter  
-
 <p align="center">
   <img src="https://github.com/user-attachments/assets/75b8cbe9-c1a8-4781-bad0-d037134e0127" width="220"/>
 </p>
