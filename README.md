@@ -1,19 +1,37 @@
 # ctenter  
 
-<table>
-<tr>
-<td>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/75b8cbe9-c1a8-4781-bad0-d037134e0127" width="220"/>
+</p>
+<p align="center">
+  A host-side tool to access <b>any container</b> — even without a shell.
+</p>
+<p align="center">
+  <img src="https://img.shields.io/github/v/release/g3rzi/ctenter?style=for-the-badge" />
+  <img src="https://img.shields.io/github/downloads/g3rzi/ctenter/total?style=for-the-badge" />
+  <img src="https://img.shields.io/github/license/g3rzi/ctenter?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/go-1.21%2B-blue?style=for-the-badge&logo=go" />
+</p>
 
-A host-side tool that lists containers across different runtimes (Docker, containerd, CRI-O) and injects a shell agent to get interactive access — even in distroless or shell-less containers.
+A host-side tool that lists containers across runtimes (Docker, containerd, CRI-O) and gives you interactive access — even in distroless or shell-less containers.  
 
-</td>
-<td>
+## ✨ Features 
+🔍 Cross-runtime discovery — Docker, containerd, CRI-O  
+🐚 Shell access without a shell — works in distroless containers  
+⚡ One-shot command execution — `--exec`  
+🧩 Custom agent support — bring your own binary  
+🪶 Lightweight injection via `/proc/<pid>/root`  
+🔐 No container modification required  
+🧠 Namespace-aware execution using `nsenter`  
 
-<img src="https://github.com/user-attachments/assets/75b8cbe9-c1a8-4781-bad0-d037134e0127" width="300"/>
+## ⚡ Quick start
+```bash
+# List containers
+sudo ctenter list
 
-</td>
-</tr>
-</table>
+# Enter container
+sudo ctenter --pid <PID>
+```
 
 ## Why I built this
 
@@ -161,7 +179,8 @@ Output files:
 | File | Description |
 |------|-------------|
 | `ctenter-linux-amd64.tar.gz` | Host tool (dynamic) |
-| `ctenter-linux-amd64-static.tar.gz` | Host tool (fully static) |
+| `ctenter-linux-amd64-static.tar.gz` | Host tool (fully static) | 
+| `ctenterd-linux-amd64.tar.gz` | Agent binary (dynamic) |  
 | `ctenterd-linux-amd64-static.tar.gz` | Agent binary (static, for injection) |
 
 Individual targets:
@@ -169,6 +188,7 @@ Individual targets:
 ```bash
 make release-ctenter           # dynamic host tool only
 make release-ctenter-static    # static host tool only
+make release-ctenterd          # dynamic host tool only
 make release-ctenterd-static   # static agent only
 ```
 
