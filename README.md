@@ -52,7 +52,7 @@ This creates a frustrating situation:
 ## Demo  
 
 
-https://github.com/user-attachments/assets/82af3db4-a2fb-41ec-b634-a1673f28b00f
+https://github.com/user-attachments/assets/276aabfd-ae94-413b-bcef-622306752c1d
 
 
 ## How it works
