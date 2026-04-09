@@ -98,7 +98,7 @@ func runShell(cmd *cobra.Command, args []string) {
 		if err != nil {
 			log.Fatalf("Failed to read agent binary %s: %v", agentPathFlag, err)
 		}
-		agentName = "custom-agent"
+		agentName = filepath.Base(agentPathFlag)
 	} else {
 		agentBytes, err = getEmbeddedAgent()
 		if err != nil {
