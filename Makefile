@@ -29,6 +29,7 @@ endif
 
 # Release output directory
 RELEASE_DIR := dist
+RELEASE_VERSION := $(VERSION)
 
 .PHONY: all ctenter ctenterd submodule clean release release-ctenter release-ctenter-static release-ctenterd release-ctenterd-static
 
@@ -53,23 +54,23 @@ $(RELEASE_DIR):
 
 # ctenter dynamic
 release-ctenter: $(RELEASE_DIR)
-	GOOS=$(OS) GOARCH=$(ARCH) $(GO) build $(LDFLAGS_CTENTER) -o $(RELEASE_DIR)/ctenter-$(OS)-$(ARCH) .
-	tar -czf $(RELEASE_DIR)/ctenter-$(OS)-$(ARCH).tar.gz -C $(RELEASE_DIR) ctenter-$(OS)-$(ARCH)
+	GOOS=$(OS) GOARCH=$(ARCH) $(GO) build $(LDFLAGS_CTENTER) -o $(RELEASE_DIR)/ctenter-$(RELEASE_VERSION)-$(OS)-$(ARCH) .
+	tar -czf $(RELEASE_DIR)/ctenter-$(RELEASE_VERSION)-$(OS)-$(ARCH).tar.gz -C $(RELEASE_DIR) ctenter-$(RELEASE_VERSION)-$(OS)-$(ARCH)
 
 # ctenter static
 release-ctenter-static: $(RELEASE_DIR)
-	CGO_ENABLED=0 GOOS=$(OS) GOARCH=$(ARCH) $(GO) build $(LDFLAGS_CTENTER_STATIC) -o $(RELEASE_DIR)/ctenter-$(OS)-$(ARCH)-static .
-	tar -czf $(RELEASE_DIR)/ctenter-$(OS)-$(ARCH)-static.tar.gz -C $(RELEASE_DIR) ctenter-$(OS)-$(ARCH)-static
+	CGO_ENABLED=0 GOOS=$(OS) GOARCH=$(ARCH) $(GO) build $(LDFLAGS_CTENTER_STATIC) -o $(RELEASE_DIR)/ctenter-$(RELEASE_VERSION)-$(OS)-$(ARCH)-static .
+	tar -czf $(RELEASE_DIR)/ctenter-$(RELEASE_VERSION)-$(OS)-$(ARCH)-static.tar.gz -C $(RELEASE_DIR) ctenter-$(RELEASE_VERSION)-$(OS)-$(ARCH)-static
 
 # ctenterd dynamic
 release-ctenterd: submodule $(RELEASE_DIR)
-	cd agent/ctenterd && GOOS=$(OS) GOARCH=$(ARCH) $(GO) build $(LDFLAGS_CTENTERD) -o ../../$(RELEASE_DIR)/ctenterd-$(OS)-$(ARCH) .
-	tar -czf $(RELEASE_DIR)/ctenterd-$(OS)-$(ARCH).tar.gz -C $(RELEASE_DIR) ctenterd-$(OS)-$(ARCH)
+	cd agent/ctenterd && GOOS=$(OS) GOARCH=$(ARCH) $(GO) build $(LDFLAGS_CTENTERD) -o ../../$(RELEASE_DIR)/ctenterd-$(RELEASE_VERSION)-$(OS)-$(ARCH) .
+	tar -czf $(RELEASE_DIR)/ctenterd-$(RELEASE_VERSION)-$(OS)-$(ARCH).tar.gz -C $(RELEASE_DIR) ctenterd-$(RELEASE_VERSION)-$(OS)-$(ARCH)
 
 # ctenterd static
 release-ctenterd-static: submodule $(RELEASE_DIR)
-	cd agent/ctenterd && CGO_ENABLED=0 GOOS=$(OS) GOARCH=$(ARCH) $(GO) build $(LDFLAGS_CTENTERD_STATIC) -o ../../$(RELEASE_DIR)/ctenterd-$(OS)-$(ARCH)-static .
-	tar -czf $(RELEASE_DIR)/ctenterd-$(OS)-$(ARCH)-static.tar.gz -C $(RELEASE_DIR) ctenterd-$(OS)-$(ARCH)-static
+	cd agent/ctenterd && CGO_ENABLED=0 GOOS=$(OS) GOARCH=$(ARCH) $(GO) build $(LDFLAGS_CTENTERD_STATIC) -o ../../$(RELEASE_DIR)/ctenterd-$(RELEASE_VERSION)-$(OS)-$(ARCH)-static .
+	tar -czf $(RELEASE_DIR)/ctenterd-$(RELEASE_VERSION)-$(OS)-$(ARCH)-static.tar.gz -C $(RELEASE_DIR) ctenterd-$(RELEASE_VERSION)-$(OS)-$(ARCH)-static
 
 # Build all release artifacts
 release: release-ctenter release-ctenter-static release-ctenterd release-ctenterd-static
