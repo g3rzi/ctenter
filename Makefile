@@ -30,7 +30,7 @@ endif
 # Release output directory
 RELEASE_DIR := dist
 
-.PHONY: all ctenter ctenterd submodule clean release release-ctenter release-ctenterd
+.PHONY: all ctenter ctenterd submodule clean release release-ctenter release-ctenter-static release-ctenterd release-ctenterd-static
 
 all: ctenter ctenterd
 
@@ -61,13 +61,18 @@ release-ctenter-static: $(RELEASE_DIR)
 	CGO_ENABLED=0 GOOS=$(OS) GOARCH=$(ARCH) $(GO) build $(LDFLAGS_CTENTER_STATIC) -o $(RELEASE_DIR)/ctenter-$(OS)-$(ARCH)-static .
 	tar -czf $(RELEASE_DIR)/ctenter-$(OS)-$(ARCH)-static.tar.gz -C $(RELEASE_DIR) ctenter-$(OS)-$(ARCH)-static
 
+# ctenterd dynamic
+release-ctenterd: submodule $(RELEASE_DIR)
+	cd agent/ctenterd && GOOS=$(OS) GOARCH=$(ARCH) $(GO) build $(LDFLAGS_CTENTERD) -o ../../$(RELEASE_DIR)/ctenterd-$(OS)-$(ARCH) .
+	tar -czf $(RELEASE_DIR)/ctenterd-$(OS)-$(ARCH).tar.gz -C $(RELEASE_DIR) ctenterd-$(OS)-$(ARCH)
+
 # ctenterd static
 release-ctenterd-static: submodule $(RELEASE_DIR)
 	cd agent/ctenterd && CGO_ENABLED=0 GOOS=$(OS) GOARCH=$(ARCH) $(GO) build $(LDFLAGS_CTENTERD_STATIC) -o ../../$(RELEASE_DIR)/ctenterd-$(OS)-$(ARCH)-static .
 	tar -czf $(RELEASE_DIR)/ctenterd-$(OS)-$(ARCH)-static.tar.gz -C $(RELEASE_DIR) ctenterd-$(OS)-$(ARCH)-static
 
 # Build all release artifacts
-release: release-ctenter release-ctenter-static release-ctenterd-static
+release: release-ctenter release-ctenter-static release-ctenterd release-ctenterd-static
 	@echo ""
 	@echo "Release artifacts in $(RELEASE_DIR)/:"
 	@ls -lh $(RELEASE_DIR)/*.tar.gz
